@@ -1,7 +1,6 @@
 from __future__ import division
 
 from models import *
-from utils.logger import *
 from utils.utils import *
 from utils.datasets import *
 from utils.parse_config import *
@@ -39,7 +38,7 @@ if __name__ == "__main__":
     opt = parser.parse_args()
     print(opt)
 
-    logger = Logger("logs")
+    # logger = Logger("logs")
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
