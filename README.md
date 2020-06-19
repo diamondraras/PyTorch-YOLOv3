@@ -88,16 +88,6 @@ Total Loss 4.429395
 ---- ETA 0:35:48.821929
 ```
 
-#### Tensorboard
-Track training progress in Tensorboard:
-* Initialize training
-* Run the command below
-* Go to http://localhost:6006/
-
-```
-$ tensorboard --logdir='logs' --port=6006
-```
-
 ## Train on Custom Dataset
 
 #### Custom model
