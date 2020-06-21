@@ -1,5 +1,5 @@
 from __future__ import division
-
+from csv import *
 from models import *
 from utils.utils import *
 from utils.datasets import *
@@ -10,7 +10,7 @@ import time
 import datetime
 import argparse
 
-from PIL import Image
+from PIL import Image, ImageDraw
 
 import torch
 from torch.utils.data import DataLoader
@@ -93,16 +93,21 @@ if __name__ == "__main__":
 
     print("\nSaving images:")
     # Iterate through images and save plot of detections
-    for img_i, (path, detections) in enumerate(zip(imgs, img_detections)):
 
+    submission = []
+    for img_i, (path, detections) in enumerate(zip(imgs, img_detections)):
+        image_id =path.split('/')[-1].split('.')[0] 
+        print(image_id)
         print("(%d) Image: '%s'" % (img_i, path))
 
         # Create plot
-        img = np.array(Image.open(path))
+        image = Image.open(path)
+        img = np.array(image)
         plt.figure()
         fig, ax = plt.subplots(1)
         ax.imshow(img)
 
+        filename = path.split("/")[-1].split(".")[0]
         # Draw bounding boxes and labels of detections
         if detections is not None:
             # Rescale boxes to original image
@@ -110,32 +115,37 @@ if __name__ == "__main__":
             unique_labels = detections[:, -1].cpu().unique()
             n_cls_preds = len(unique_labels)
             bbox_colors = random.sample(colors, n_cls_preds)
+            draw = ImageDraw.Draw(image)
             for x1, y1, x2, y2, conf, cls_conf, cls_pred in detections:
+                
 
-                print("\t+ Label: %s, Conf: %.5f" % (classes[int(cls_pred)], cls_conf.item()))
+
+                draw.rectangle(((x1, y1), (x2, y2)))
+                # print("\t+ Label: %s, Conf: %.5f" % (classes[int(cls_pred)], cls_conf.item()))
 
                 box_w = x2 - x1
                 box_h = y2 - y1
 
-                color = bbox_colors[int(np.where(unique_labels == int(cls_pred))[0])]
-                # Create a Rectangle patch
-                bbox = patches.Rectangle((x1, y1), box_w, box_h, linewidth=2, edgecolor=color, facecolor="none")
-                # Add the bbox to the plot
-                ax.add_patch(bbox)
-                # Add label
-                plt.text(
-                    x1,
-                    y1,
-                    s=classes[int(cls_pred)],
-                    color="white",
-                    verticalalignment="top",
-                    bbox={"color": color, "pad": 0},
-                )
+                # print(f'{conf} {float(x1)} {float(x1)} {float(box_w)}  {float(box_h)}')
+                # color = bbox_colors[int(np.where(unique_labels == int(cls_pred))[0])]
+                # # Create a Rectangle patch
+                # bbox = patches.Rectangle((x1, y1), box_w, box_h, linewidth=2, edgecolor=color, facecolor="none")
+                # # Add the bbox to the plot
+                # ax.add_patch(bbox)
+                # # Add label
+                # plt.text(
+                #     x1,
+                #     y1,
+                #     s=classes[int(cls_pred)],
+                #     color="white",
+                #     verticalalignment="top",
+                #     bbox={"color": color, "pad": 0},
+                # )
 
         # Save generated image with detections
+        image.save(f"output/{filename}.png")
         plt.axis("off")
         plt.gca().xaxis.set_major_locator(NullLocator())
         plt.gca().yaxis.set_major_locator(NullLocator())
-        filename = path.split("/")[-1].split(".")[0]
-        plt.savefig(f"output/{filename}.png", bbox_inches="tight", pad_inches=0.0)
+        # plt.savefig(f"output/{filename}.png", bbox_inches="tight", pad_inches=0.0)
         plt.close()
