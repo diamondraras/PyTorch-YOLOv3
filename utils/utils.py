@@ -9,7 +9,7 @@ from torch.autograd import Variable
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
-
+import os
 
 def to_cpu(tensor):
     return tensor.detach().cpu()
@@ -19,6 +19,7 @@ def load_classes(path):
     """
     Loads class labels at 'path'
     """
+    
     fp = open(path, "r")
     names = fp.read().split("\n")[:-1]
     return names

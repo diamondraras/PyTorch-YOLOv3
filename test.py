@@ -76,7 +76,8 @@ if __name__ == "__main__":
     data_config = parse_data_config(opt.data_config)
     valid_path = data_config["valid"]
     class_names = load_classes(data_config["names"])
-
+    # class_names = ['weat']
+    print(class_names)
     # Initiate model
     model = Darknet(opt.model_def).to(device)
     if opt.weights_path.endswith(".weights"):
